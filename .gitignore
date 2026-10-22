@@ -1,0 +1,37 @@
+# Dependencies
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Agent metadata
+.antigravitycli/
+.omp/
+
+# Logs
+*.log
+npm-debug.log*

@@ -1,0 +1,108 @@
+{
+  "realm": "vector-pilot",
+  "enabled": true,
+  "displayName": "Vector Pilot",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "roles": {
+    "realm": [
+      { "name": "admin", "description": "Administrator role" },
+      { "name": "operator", "description": "Operator role" },
+      { "name": "analyst", "description": "Analyst role" }
+    ],
+    "client": {}
+  },
+  "clients": [
+    {
+      "clientId": "vector-pilot",
+      "name": "Vector Pilot Frontend",
+      "description": "Vector Pilot frontend SPA",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "redirectUris": [
+        "http://localhost:5173/*",
+        "http://127.0.0.1:5173/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "protocolMappers": [
+        {
+          "name": "role mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "user.attribute": "roles",
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@example.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "operator",
+      "email": "operator@example.com",
+      "firstName": "Operator",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "operator",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["operator"]
+    },
+    {
+      "username": "analyst",
+      "email": "analyst@example.com",
+      "firstName": "Analyst",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "analyst",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["analyst"]
+    }
+  ]
+}
