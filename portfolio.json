@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "vector-pilot-alan-vo",
+  "owner": "ALANDVO",
+  "email": "alanvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: vector-pilot-alan-vo",
+  "workflows": [
+    "Create evaluation with dataset and model configuration",
+    "Execute evaluation runs across multiple LLM providers",
+    "Compare results with metrics dashboard and export"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}

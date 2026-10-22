@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/vector-pilot.db
+      - DEBUG=true
+      - OIDC_ISSUER_URL=http://keycloak:8080/realms/vector-pilot
+      - OIDC_CLIENT_ID=vector-pilot
+      - OIDC_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - OIDC_AUDIENCE=vector-pilot
+      - SECRET_KEY=${SECRET_KEY}
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+    volumes:
+      - backend-data:/app/data
+    depends_on:
+      - keycloak
+    networks:
+      - vector-pilot-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:80:80"
+    depends_on:
+      - backend
+    networks:
+      - vector-pilot-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start-dev --import-realm
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=dev-file
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+      - keycloak-data:/opt/keycloak/data
+    networks:
+      - vector-pilot-network
+
+volumes:
+  backend-data:
+  keycloak-data:
+
+networks:
+  vector-pilot-network:
+    driver: bridge
