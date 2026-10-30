@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
-from app.core.database import get_db
-from app.services.evaluation import EvaluationService
-from app.schemas.evaluation import (
+from backend.app.core.database import get_db
+from backend.app.services.evaluation import EvaluationService
+from backend.app.schemas.evaluation import (
     EvaluationCreate,
     EvaluationUpdate,
     EvaluationRead,
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/evaluations", tags=["evaluations"])
 async def create_evaluation(
     evaluation_in: EvaluationCreate,
     db: AsyncSession = Depends(get_db),
-    owner_id: int = 1,  # TODO: Replace with actual auth
+    owner_id: Optional[int] = None,
 ):
     service = EvaluationService(db)
     evaluation = await service.create_evaluation(evaluation_in, owner_id)
@@ -31,11 +31,11 @@ async def create_evaluation(
 
 @router.get("", response_model=EvaluationListResponse)
 async def list_evaluations(
+    db: AsyncSession = Depends(get_db),
+    owner_id: Optional[int] = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     status: Optional[str] = None,
-    db: AsyncSession = Depends(get_db),
-    owner_id: int = 1,  # TODO: Replace with actual auth
 ):
     service = EvaluationService(db)
     return await service.list_evaluations(owner_id=owner_id, page=page, page_size=page_size, status=status)
@@ -45,7 +45,7 @@ async def list_evaluations(
 async def get_evaluation(
     evaluation_id: int,
     db: AsyncSession = Depends(get_db),
-    owner_id: int = 1,  # TODO: Replace with actual auth
+    owner_id: Optional[int] = None,
 ):
     service = EvaluationService(db)
     evaluation = await service.get_evaluation_with_runs(evaluation_id, owner_id)
@@ -59,7 +59,7 @@ async def update_evaluation(
     evaluation_id: int,
     evaluation_in: EvaluationUpdate,
     db: AsyncSession = Depends(get_db),
-    owner_id: int = 1,  # TODO: Replace with actual auth
+    owner_id: Optional[int] = None,
 ):
     service = EvaluationService(db)
     evaluation = await service.update_evaluation(evaluation_id, evaluation_in, owner_id)
@@ -72,11 +72,11 @@ async def update_evaluation(
 async def delete_evaluation(
     evaluation_id: int,
     db: AsyncSession = Depends(get_db),
-    owner_id: int = 1,  # TODO: Replace with actual auth
+    owner_id: Optional[int] = None,
 ):
     service = EvaluationService(db)
-    deleted = await service.delete_evaluation(evaluation_id, owner_id)
-    if not deleted:
+    success = await service.delete_evaluation(evaluation_id, owner_id)
+    if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evaluation not found")
 
 
@@ -85,7 +85,7 @@ async def create_run(
     evaluation_id: int,
     run_in: EvaluationRunCreate,
     db: AsyncSession = Depends(get_db),
-    owner_id: int = 1,  # TODO: Replace with actual auth
+    owner_id: Optional[int] = None,
 ):
     service = EvaluationService(db)
     run = await service.create_run(evaluation_id, run_in, owner_id)

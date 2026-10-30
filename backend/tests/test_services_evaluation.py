@@ -1,10 +1,10 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.evaluation import Evaluation, EvaluationRun, EvaluationMetric, EvaluationStatus
-from app.models.user import User, Role
-from app.schemas.evaluation import EvaluationCreate, EvaluationRunCreate, EvaluationMetricBase
-from app.services.evaluation import EvaluationService
+from backend.app.models.evaluation import Evaluation, EvaluationRun, EvaluationMetric, EvaluationStatus
+from backend.app.models.user import User, Role
+from backend.app.schemas.evaluation import EvaluationCreate, EvaluationRunCreate, EvaluationMetricBase
+from backend.app.services.evaluation import EvaluationService
 
 
 @pytest.mark.asyncio
@@ -57,7 +57,7 @@ async def test_update_evaluation_service(db_session: AsyncSession):
     eval_in = EvaluationCreate(name="Original", dataset_name="orig")
     created = await service.create_evaluation(eval_in, owner_id=1)
 
-    from app.schemas.evaluation import EvaluationUpdate
+    from backend.app.schemas.evaluation import EvaluationUpdate
     updated = await service.update_evaluation(
         created.id,
         EvaluationUpdate(name="Updated", description="New desc"),
