@@ -27,6 +27,8 @@
     "jsdom": "^25.0.0"
   },
   "author": {
-    "email": "alanvo@gmail.com"
+    "name": "Alan Vo",
+    "email": "alanvo@gmail.com",
+    "url": "https://github.com/ALANDVO"
   }
 }

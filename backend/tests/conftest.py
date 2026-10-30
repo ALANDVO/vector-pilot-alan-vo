@@ -4,10 +4,10 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.main import create_app
-from app.core.database import Base, get_db
-from app.models.evaluation import Evaluation, EvaluationRun, EvaluationMetric, EvaluationStatus
-from app.models.user import User, Role
+from backend.app.main import create_app
+from backend.app.core.database import Base, get_db, set_test_engine, init_db
+from backend.app.models.evaluation import Evaluation, EvaluationRun, EvaluationMetric, EvaluationStatus
+from backend.app.models.user import User, Role
 
 
 # Test database
@@ -38,11 +38,15 @@ async def db_session():
 
 @pytest_asyncio.fixture(scope="function")
 async def client(db_session):
-    def override_get_db():
+    async def override_get_db():
         yield db_session
 
+    set_test_engine(test_engine)
     app = create_app()
     app.dependency_overrides[get_db] = override_get_db
+
+    # Manually initialize database
+    await init_db()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
