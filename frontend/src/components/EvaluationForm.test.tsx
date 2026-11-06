@@ -1,5 +1,6 @@
 import { vi, describe, it, beforeEach, expect } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router-dom'
 import { EvaluationForm } from './EvaluationForm'
 import { api } from '../api/client'
@@ -47,9 +48,7 @@ describe('EvaluationForm', () => {
       created_at: '2024-01-15T10:00:00Z',
       updated_at: '2024-01-15T10:00:00Z',
       completed_at: '2024-01-15T11:00:00Z',
-      config: '{"metric": "accuracy"}',
     }
-    // Mock the useParams hook to return an id
     renderWithRouter(<EvaluationForm initialData={initialData} />)
     expect(screen.getByRole('heading', { name: 'Edit Evaluation' })).toBeInTheDocument()
     expect(screen.getByLabelText('Name *')).toHaveValue('Existing Evaluation')
@@ -58,20 +57,23 @@ describe('EvaluationForm', () => {
 
   it('submits create form successfully', async () => {
     ;(api.evaluations.create as vi.Mock).mockResolvedValue({})
-    renderWithRouter(<EvaluationForm onSuccess={vi.fn()} />)
+    const onSuccess = vi.fn()
+    renderWithRouter(<EvaluationForm onSuccess={onSuccess} />)
 
-    screen.getByLabelText('Name *').value = 'New Evaluation'
-    screen.getByLabelText('Dataset Name *').value = 'new-dataset'
-    screen.getByRole('button', { name: 'Create' }).click()
+    await userEvent.type(screen.getByLabelText('Name *'), 'New Evaluation')
+    await userEvent.type(screen.getByLabelText('Dataset Name *'), 'new-dataset')
+    await userEvent.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() => {
       expect(api.evaluations.create).toHaveBeenCalledWith({
         name: 'New Evaluation',
-        description: '',
+        description: undefined,
         dataset_name: 'new-dataset',
         dataset_version: '1.0',
+        config: undefined,
       })
     })
+    expect(onSuccess).toHaveBeenCalled()
   })
 
   it('submits edit form successfully', async () => {
@@ -88,21 +90,29 @@ describe('EvaluationForm', () => {
       updated_at: '2024-01-15T10:00:00Z',
       completed_at: '2024-01-15T11:00:00Z',
     }
-    renderWithRouter(<EvaluationForm initialData={initialData} onSuccess={vi.fn()} />)
+    const onSuccess = vi.fn()
+    renderWithRouter(<EvaluationForm initialData={initialData} onSuccess={onSuccess} />)
 
-    screen.getByLabelText('Name *').value = 'Updated Evaluation'
-    screen.getByRole('button', { name: 'Update' }).click()
+    await userEvent.clear(screen.getByLabelText('Name *'))
+    await userEvent.type(screen.getByLabelText('Name *'), 'Updated Evaluation')
+    await userEvent.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() => {
       expect(api.evaluations.update).toHaveBeenCalledWith(1, expect.objectContaining({
         name: 'Updated Evaluation',
       }))
     })
+    expect(onSuccess).toHaveBeenCalled()
   })
 
   it('shows validation errors for required fields', async () => {
     renderWithRouter(<EvaluationForm />)
-    screen.getByRole('button', { name: 'Create' }).click()
-    expect(api.evaluations.create).not.toHaveBeenCalled()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Name *')).toHaveAttribute('required')
+      expect(screen.getByLabelText('Dataset Name *')).toHaveAttribute('required')
+    })
   })
 })

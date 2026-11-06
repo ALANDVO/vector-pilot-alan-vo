@@ -9,8 +9,9 @@ interface EvaluationFormProps {
 
 export function EvaluationForm({ initialData, onSuccess }: EvaluationFormProps) {
   const navigate = useNavigate()
-  const { id } = useParams<{ id: string }>()
-  const isEditing = !!id
+  const { id: urlId } = useParams<{ id: string }>()
+  const isEditing = !!urlId || !!initialData
+  const id = urlId || initialData?.id?.toString()
 
   const [name, setName] = useState(initialData?.name || '')
   const [description, setDescription] = useState(initialData?.description || '')
