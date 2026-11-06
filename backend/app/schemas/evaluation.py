@@ -44,10 +44,10 @@ class EvaluationRead(EvaluationBase):
 
 
 class EvaluationRunBase(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     model_provider: str = Field(..., min_length=1, max_length=100)
     model_name: str = Field(..., min_length=1, max_length=255)
     model_config_json: Optional[dict[str, Any]] = None
-
 
 class EvaluationRunCreate(EvaluationRunBase):
     pass
