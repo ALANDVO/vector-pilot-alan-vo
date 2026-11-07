@@ -66,3 +66,6 @@ Acceptance:
 
 Implementation: `README.md`, `LICENSE`, `CHANGELOG.md`, `portfolio.json`, `pyproject.toml`, `frontend/package.json`, `.github/workflows/ci.yml`, `compose.yaml`, `backend/Dockerfile`, `frontend/Dockerfile`, `keycloak/realm-export.json`, `.env.example`
 
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

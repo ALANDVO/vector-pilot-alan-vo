@@ -31,3 +31,7 @@ All notable changes to this project will be documented in this file.
 - 8 frontend tests (components + pages)
 - Deterministic offline evaluation engine core
 - LLM provider adapters (OpenAI-compatible, Anthropic, Gemini, Ollama)
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)
