@@ -64,10 +64,9 @@ class EvaluationRunRead(EvaluationRunBase):
     error_message: Optional[str] = None
 
     @property
+    @property
     def model_config_dict(self) -> Optional[dict[str, Any]]:
-        if self.model_config_json:
-            return json.loads(self.model_config_json)
-        return None
+        return self.model_config_json
 
 
 class EvaluationMetricBase(BaseModel):

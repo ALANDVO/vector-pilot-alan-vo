@@ -138,7 +138,7 @@ class EvaluationService:
             evaluation_id=evaluation_id,
             model_provider=run_in.model_provider,
             model_name=run_in.model_name,
-            model_config=json.dumps(run_in.model_config) if run_in.model_config else None,
+            model_config=json.dumps(run_in.model_config_json) if run_in.model_config_json else None,
             status=EvaluationStatus.PENDING,
         )
         self.db.add(run)
