@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "skeleton-fastapi-react",
+  "current_feature": "oidc-keycloak-auth",
   "features": [
     {
       "id": "skeleton-fastapi-react",
@@ -36,7 +36,7 @@
     {
       "id": "oidc-keycloak-auth",
       "title": "OIDC authentication with Keycloak",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Keycloak realm import provided",
         "Backend validates JWT tokens with signature/issuer/audience",
@@ -44,8 +44,14 @@
         "Role-based authorization on all data endpoints",
         "Tests cover unauthenticated rejection and role denial"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/core/auth.py - JWT validation middleware",
+        "backend/app/api/v1/evaluations.py - Auth-dependent endpoints",
+        "backend/tests/test_api_evaluations.py - OIDC test fixtures and tests"
+      ],
+      "tests": [
+        "backend/tests/test_api_evaluations.py::TestOIDCAuthentication"
+      ]
     },
     {
       "id": "llm-adapters",

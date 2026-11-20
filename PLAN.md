@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-skeleton-fastapi-react
+oidc-keycloak-auth
 
 ## Roadmap
 
@@ -26,7 +26,7 @@ Tests: `backend/tests/test_api_evaluations.py`, `backend/tests/test_services_eva
 
 ### oidc-keycloak-auth — OIDC authentication with Keycloak
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Keycloak realm import provided
@@ -34,6 +34,10 @@ Acceptance:
 - Frontend implements PKCE flow with sessionStorage
 - Role-based authorization on all data endpoints
 - Tests cover unauthenticated rejection and role denial
+
+Implementation: `backend/app/core/auth.py - JWT validation middleware`, `backend/app/api/v1/evaluations.py - Auth-dependent endpoints`, `backend/tests/test_api_evaluations.py - OIDC test fixtures and tests`
+
+Tests: `backend/tests/test_api_evaluations.py::TestOIDCAuthentication`
 
 ### llm-adapters — LLM provider adapters (OpenAI-compatible, Anthropic, Gemini, Ollama)
 
