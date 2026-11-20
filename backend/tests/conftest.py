@@ -36,6 +36,7 @@ async def db_session():
         await conn.run_sync(Base.metadata.drop_all)
 
 
+# Original client fixture (from before OIDC auth)
 @pytest_asyncio.fixture(scope="function")
 async def client(db_session):
     async def override_get_db():
@@ -51,6 +52,103 @@ async def client(db_session):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def auth_client(db_session, test_user):
+    """Create an authenticated test client using the provided test_user."""
+    async def override_get_db():
+        yield db_session
+
+    set_test_engine(test_engine)
+    app = create_app()
+    app.dependency_overrides[get_db] = override_get_db
+
+    # Manually initialize database
+    await init_db()
+
+    import jwt as pyjwt
+    from datetime import datetime, timezone, timedelta
+    
+    from backend.app.core.config import get_settings
+    settings = get_settings()
+    secret_key = settings.secret_key
+    
+    # Use the test_user's credentials for the token
+    user = test_user
+    
+    # Token payload
+    token_data = {
+        "sub": user.keycloak_id,
+        "email": user.email,
+        "preferred_username": user.username,
+        "realm_access": {
+            "roles": [user.role.value]
+        },
+        "resource_access": {
+            "vector-pilot": {
+                "roles": [user.role.value]
+            }
+        },
+        "iat": int(datetime.now(timezone.utc).timestamp()),
+        "exp": int((datetime.now(timezone.utc) + timedelta(hours=1)).timestamp()),
+        "iss": "http://localhost:8080/realms/vector-pilot",
+        "aud": "vector-pilot-alan-vo",
+    }
+    
+    token = pyjwt.encode(token_data, secret_key, algorithm="HS256")
+    
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test", headers={"Authorization": f"Bearer {token}"}) as ac:
+        yield ac
+    
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def admin_auth_client(db_session, test_user):
+    """Create an authenticated test client with admin role."""
+    async def override_get_db():
+        yield db_session
+
+    set_test_engine(test_engine)
+    app = create_app()
+    app.dependency_overrides[get_db] = override_get_db
+
+    # Manually initialize database
+    await init_db()
+
+    import jwt as pyjwt
+    from datetime import datetime, timezone, timedelta
+    
+    from backend.app.core.config import get_settings
+    settings = get_settings()
+    secret_key = settings.secret_key
+    
+    # Token payload with admin role
+    token_data = {
+        "sub": "admin-User",
+        "email": "admin@example.com",
+        "preferred_username": "admin",
+        "realm_access": {
+            "roles": ["admin"]
+        },
+        "resource_access": {
+            "vector-pilot": {
+                "roles": ["admin"]
+            }
+        },
+        "iat": int(datetime.now(timezone.utc).timestamp()),
+        "exp": int((datetime.now(timezone.utc) + timedelta(hours=1)).timestamp()),
+        "iss": "http://localhost:8080/realms/vector-pilot",
+        "aud": "vector-pilot-alan-vo",
+    }
+    
+    token = pyjwt.encode(token_data, secret_key, algorithm="HS256")
+    
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test", headers={"Authorization": f"Bearer {token}"}) as ac:
+        yield ac
+    
     app.dependency_overrides.clear()
 
 
