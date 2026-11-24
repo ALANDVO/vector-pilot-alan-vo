@@ -1,6 +1,6 @@
 [project]
 name = "vector-pilot-alan-vo"
-version = "1.4.0"
+version = "1.5.0"
 description = "Evaluation framework for AI agent reasoning and model quality"
 readme = "README.md"
 license = {text = "MIT"}
