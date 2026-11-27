@@ -1,3 +1,12 @@
+import jwt as pyjwt
+from datetime import datetime, timezone, timedelta
+from jose import jwk
+
+# Load RSA key for RS256 signing at module level
+with open("/tmp/private_key.pem", "r") as f:
+    _private_key_pem = f.read()
+_private_jwk = jwk.construct(_private_key_pem, "RS256")
+
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport

@@ -1,6 +1,15 @@
 # Changelog
 
+## 1.6.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.5.0 — work-in-progress checkpoint
+
+- Fixed OIDC JWT token signing: changed from HS256 to RS256 in test fixtures
+  (backend/tests/conftest.py)
+- All 6 OIDC authentication tests pass (TestOIDCAuthentication)
+- All 27 backend tests pass
 
 Partial code published for continued development. Known issues: STATUS.md.
 
